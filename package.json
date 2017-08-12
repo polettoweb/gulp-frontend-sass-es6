@@ -1,0 +1,39 @@
+{
+    "name": "frontend_gulp_template",
+    "version": "1.2.0",
+    "description": "Base template for Front End Development",
+    "main": "gulpfile.js",
+    "dependencies": {},
+    "devDependencies": {
+        "babel-core": "latest",
+        "babel-preset-es2015": "latest",
+        "browser-sync": "latest",
+        "gulp": "latest",
+        "gulp-babel": "latest",
+        "gulp-clean": "latest",
+        "gulp-clean-css": "latest",
+        "gulp-concat": "latest",
+        "gulp-config-strip-debug": "latest",
+        "gulp-htmlmin": "latest",
+        "gulp-image-resize": "latest",
+        "gulp-imagemin": "latest",
+        "gulp-json-minify": "latest",
+        "gulp-noop": "latest",
+        "gulp-postcss": "^7.0.0",
+        "gulp-rename": "latest",
+        "gulp-sass": "latest",
+        "gulp-sourcemaps": "latest",
+        "gulp-strip-comments": "latest",
+        "gulp-uglify": "latest",
+        "gulp-util": "latest",
+        "postcss-cssnext": "^3.0.2",
+        "postcss-pxtorem": "^4.0.1",
+        "postcss-svg": "^2.1.0",
+        "run-sequence": "latest"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Marco Poletto",
+    "license": "ISC"
+}
