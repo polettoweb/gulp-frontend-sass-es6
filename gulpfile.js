@@ -97,7 +97,7 @@ gulp.task('default', function(callback) {
         errLogToConsole: true,
         outputStyle: 'expanded'
     };
-    runSequence('clean:dist', 'sass', 'html', 'js', 'img', 'data', 'includejs', 'includecss', callback)
+    runSequence('sass', 'html', 'js', 'img', 'data', 'includejs', 'includecss', callback)
 });
 
 // Watching for changes on any project folder
