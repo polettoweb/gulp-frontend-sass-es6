@@ -1,46 +1,46 @@
 // REQUIRE PACKAGES
 /** For Gulp workflow **/
-let gulp = require('gulp');
-let runSequence = require('run-sequence');
-let clean = require('gulp-clean');
-let bs = require('browser-sync').create();
-let strip = require('gulp-strip-comments');
-let stripDebug = require('gulp-config-strip-debug');
-let noop = require('gulp-noop');
-let util = require('gulp-util');
+const gulp = require('gulp');
+const runSequence = require('run-sequence');
+const clean = require('gulp-clean');
+const bs = require('browser-sync').create();
+const strip = require('gulp-strip-comments');
+const stripDebug = require('gulp-config-strip-debug');
+const noop = require('gulp-noop');
+const util = require('gulp-util');
 
 /** For HTML **/
 //json minify for production
-let jsonminify = require('gulp-json-minify');
+const jsonminify = require('gulp-json-minify');
 //html minify for production
-let htmlmin = require('gulp-htmlmin');
+const htmlmin = require('gulp-htmlmin');
 
 /** For Css **/
 //compiling sass to css
-let sass = require('gulp-sass');
+const sass = require('gulp-sass');
 //clean and minify css for production
-let cleanCSS = require('gulp-clean-css');
+const cleanCSS = require('gulp-clean-css');
 //creation of sourcemaps in dev environment
-let sourcemaps = require('gulp-sourcemaps');
+const sourcemaps = require('gulp-sourcemaps');
 //PostCSS automatic prefix, px to rem, fallback, sprite, etc
-let postcss = require('gulp-postcss');
-//cssnext is a pack of postcss plugins. it comprhends a lot of workers. Define custom rule in "processors" let
-let cssnext = require('postcss-cssnext');
+const postcss = require('gulp-postcss');
+//cssnext is a pack of postcss plugins. it comprehends a lot of workers. Define custom rule in "processors" let
+const cssnext = require('postcss-cssnext');
 //automatic conversion from PX to REM - Use "propWhiteList" to add element in white list -> [] = all
-let pxtorem = require('postcss-pxtorem');
+const pxtorem = require('postcss-pxtorem');
 // use a single SVG file and gives ID inside the svg code. use syntax filename.ext#id to call the as background
-let svg = require('postcss-svg');
+const svg = require('postcss-svg');
 
 // For Js
-let babel = require("gulp-babel");
-let uglify = require("gulp-uglify");
-let concat = require("gulp-concat");
+const babel = require("gulp-babel");
+const uglify = require("gulp-uglify");
+const concat = require("gulp-concat");
 
 // For Images
-let imagemin = require('gulp-imagemin');
+const imagemin = require('gulp-imagemin');
 
 // Define I/O paths
-let path = {
+const path = {
     css: {
         i: './src/scss/**/*.scss',
         o: './dist/css/'
@@ -78,8 +78,8 @@ let sassOptions = {
 };
 /** Env var. Checking dev / prod flag */
 let config = {
-        production: !!util.env.production
-    };
+    production: !!util.env.production
+};
 //post css used plugins: autoprefix, px to rem, svg sprite
 let processors = [
     cssnext,
@@ -97,20 +97,20 @@ gulp.task('default', function(callback) {
         errLogToConsole: true,
         outputStyle: 'expanded'
     };
-    runSequence('sass', 'html', 'js', 'img', 'data', 'includejs', 'includecss', callback)
+    runSequence('clean:dist', 'sass', 'html', 'js','fonts', 'img', 'data', 'includejs', 'includecss', callback)
 });
 
 // Watching for changes on any project folder
 gulp.task('watch', function() {
-        runSequence('clean:dist', 'default', function() {
-            bs.init({ server: "dist" });
-            gulp.watch(path.js.i, ['js']);
-            gulp.watch(path.css.i, ['sass']);
-            gulp.watch(path.html.i, ['html']);
-            gulp.watch(path.img.i, ['img']);
-            gulp.watch(path.data.i, ['data']);
-            gulp.watch(path.include.i, ['includejs','includecss']);
-        })
+    runSequence('clean:dist', 'default', function() {
+        gulp.watch(path.js.i, ['js']);
+        gulp.watch(path.css.i, ['sass']);
+        gulp.watch(path.html.i, ['html']);
+        gulp.watch(path.img.i, ['img']);
+        gulp.watch(path.data.i, ['data']);
+        gulp.watch(path.include.i, ['includejs','includecss']);
+        bs.init({ server: "dist" });
+    })
 
 });
 /** Bundle everything up ready for dropping onto the server
@@ -122,9 +122,24 @@ gulp.task('prod', function() {
         errLogToConsole: false,
         outputStyle: 'compressed'
     };
-    runSequence('clean:dist', 'sass', 'html', 'js', 'img', 'data', 'includejs','includecss', () => {
+    runSequence('clean:dist', 'sass', 'html', 'js', 'fonts', 'img', 'data', 'includejs','includecss', () => {
         console.log('Production build FINISHED!!!!');
     })
+});
+/*TASK FOR WORDPRESS LIVE REALOAD ON PHP FILES*/
+gulp.task('serve', function () {
+    var proxy = 'ADD LOCAL HOST ADDRESS';
+    var path = 'ADD WWW FOLDER';
+    var files = [
+        path + '**/*.php',
+        path + '**/*.{png,jpg,gif}'
+    ];
+    // Serve files from the root of this project
+    bs.init(files, {
+            proxy: proxy,
+            injectChanges: true
+
+    });
 });
 //
 // // Delete the distribution folder
@@ -160,11 +175,11 @@ gulp.task('data', function() {
 //
 // 3rd party plugins - splitting JS from CSS files and putting them in the right dest folder
 gulp.task('includejs', function() {
-        gulp.src('./src/include/*.js')
-            .pipe(gulp.dest(path.js.o))
-            .pipe(config.production ? uglify() : noop())
-            .pipe(bs.stream())
-    });
+    gulp.src('./src/include/*.js')
+        .pipe(gulp.dest(path.js.o))
+        .pipe(config.production ? uglify() : noop())
+        .pipe(bs.stream())
+});
 gulp.task('includecss', function() {
     gulp.src('./src/include/*.css')
         .pipe(gulp.dest(path.css.o))
@@ -176,28 +191,28 @@ gulp.task('fonts', function() {
     gulp.src(path.fonts.i)
         .pipe(gulp.dest(path.fonts.o))
         .pipe(bs.stream())
-});  
+});
 // Scss
 gulp.task('sass', function() {
     gulp.src(path.css.i)
-        .pipe(sourcemaps.init())
+        .pipe(config.production ? util.noop() : sourcemaps.init())
         .pipe(sass(sassOptions).on('error', sass.logError))
         .pipe(postcss(processors))
         .pipe(config.production ? cleanCSS() : util.noop())
-        .pipe(sourcemaps.write())
+        .pipe(config.production ? util.noop() : sourcemaps.write())
         .pipe(gulp.dest(path.css.o))
         .pipe(bs.stream())
-    });
+});
 //     // Javascript
 gulp.task('js', function() {
     gulp.src(path.js.i)
-        .pipe(sourcemaps.init())
+        .pipe(config.production ? util.noop() : sourcemaps.init())
         .pipe(concat('app.js'))
         .pipe(babel({ presets: ['es2015'], minified: config.production }))
         .pipe(config.production ? stripDebug() : noop())
         .pipe(config.production ? strip() : noop())
         .pipe(config.production ? uglify() : noop())
-        .pipe(sourcemaps.write('.'))
+        .pipe(config.production ? util.noop() : sourcemaps.write('.'))
         .pipe(gulp.dest(path.js.o))
         .pipe(bs.stream())
 });
